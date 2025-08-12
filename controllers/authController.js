@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 import transport from '../middlewares/sendMails.js'
 import dotenv from 'dotenv'
+import path from 'path'
 dotenv.config() 
 
 export const signup = async (req, res) => {
@@ -61,10 +62,12 @@ export const login = async (req, res) => {
         }, process.env.TOKEN_SECRET, { expiresIn: '1d' })
 
         res
-            .cookie('Authorization', 'Bearer ' + token, {
+            .cookie('token', token, {
                 expires: new Date(Date.now() + 8 * 3600000),
-                httpOnly: process.env.NODE_ENV === 'production',
-                secure: process.env.NODE_ENV === 'production'
+                httpOnly: true,
+                secure: true,
+                sameSite:'None',
+                path:'/'
             })
             .json({
                 success: true,
