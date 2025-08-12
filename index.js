@@ -26,11 +26,20 @@ app.use(express.json())
 app.use('/api/auth',authRouters)
 app.use('/api/prevyrspapers',prevyrspapersRouters)
 
-mongoose.connect(process.env.MONGO_URI).then(()=>{
-  console.log("Databse COnnected!")
-}).catch((err)=>{
-  console.error(err)
-})
+
+let isConnected=false
+const connectDB=async()=>{
+  if (isConnected) return
+  try{
+    const db=await mongoose.connect(process.env.MONGO_URI)
+    isConnected=db.connections[0].readyState
+    console.log("Databse COnnected!")
+  }catch(err){
+    console.error("MongoDB connection error:", err);
+    throw err;
+  }
+}
+connectDB()
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
